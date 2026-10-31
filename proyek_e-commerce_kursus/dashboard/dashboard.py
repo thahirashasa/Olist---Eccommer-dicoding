@@ -11,10 +11,10 @@ st.set_page_config(
     layout="wide"
 )
 
-top_delivered_category_by_states_df = pd.read_csv("top_delivered_category_by_states_df.csv")
-monthly_delivery_df = pd.read_csv("monthly_delivery_df.csv")
-repeat_category1_df = pd.read_csv("repeat_category_english_df.csv")
-rfm_df = pd.read_csv("rfm.csv")
+top_delivered_category_by_states_df = pd.read_csv("https://raw.githubusercontent.com/thahirashasa/Olist---Eccommer-dicoding/refs/heads/main/proyek_e-commerce_kursus/dashboard/top_delivered_category_by_states_df.csv")
+monthly_delivery_df = pd.read_csv("https://raw.githubusercontent.com/thahirashasa/Olist---Eccommer-dicoding/refs/heads/main/proyek_e-commerce_kursus/dashboard/monthly_delivery_df.csv")
+repeat_category1_df = pd.read_csv("https://raw.githubusercontent.com/thahirashasa/Olist---Eccommer-dicoding/refs/heads/main/proyek_e-commerce_kursus/dashboard/repeat_category_english_df.csv")
+rfm_df = pd.read_csv("https://raw.githubusercontent.com/thahirashasa/Olist---Eccommer-dicoding/refs/heads/main/proyek_e-commerce_kursus/dashboard/rfm.csv")
 
 palette = ["#E6B3D9", "#E2E1E2", "#B0DBD1", "#92BAC1"]
 
