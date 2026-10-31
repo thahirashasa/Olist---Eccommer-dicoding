@@ -26,7 +26,8 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
       "🛍️ Regional Sales",
       "🚚 Delivery Performance",
       "💗 Repeat Purchase",
-      "👥 RFM Segmentation"
+      "👥 RFM Segmentation",
+      "🔎 Data Explorer"
 ])
 
 with tab1:
@@ -348,6 +349,150 @@ with tab5:
             )
 
             st.plotly_chart(fig_rfm,use_container_width=True)
+
+with tab6:
+      st.header("Interactive Data Explorer")
+      st.caption(
+            "Explore product sales across Brazilian states "
+            "and product categories."
+      )
+
+      explorer_data = top_delivered_category_by_states_df.copy()
+
+      st.subheader("Customize Your Exploration")
+
+      state_options = sorted(
+            explorer_data["customer_state"].dropna().unique()
+      )
+
+      category_options = sorted(
+            explorer_data["product_category_name"].dropna().unique()
+      )
+
+      if "selected_states" not in st.session_state:
+            st.session_state.selected_states = state_options.copy()
+
+      if "selected_categories" not in st.session_state:
+            st.session_state.selected_categories = category_options.copy()
+
+      def reset_filters():
+            st.session_state.selected_states = state_options.copy()
+            st.session_state.selected_categories = category_options.copy()
+
+      col1, col2, col3 = st.columns([2, 2, 1])
+
+      with col1:
+            st.multiselect(
+                  "Select Brazilian States",
+                  options=state_options,
+                  key="selected_states"
+            )
+
+      with col2:
+            st.multiselect(
+                  "Select Product Categories",
+                  options=category_options,
+                  key="selected_categories"
+            )
+
+      with col3:
+            st.write("")
+            st.write("")
+            st.button(
+                  "↻ Reset Filters",
+                  on_click=reset_filters,
+                  use_container_width=True
+            )
+
+      selected_states = st.session_state.selected_states
+      selected_categories = st.session_state.selected_categories
+
+      filtered_data = explorer_data[
+            (explorer_data["customer_state"].isin(selected_states)) &
+            (explorer_data["product_category_name"].isin(selected_categories))
+      ].copy()
+
+      if filtered_data.empty:
+            st.warning("No data available for the selected filters.")
+
+      else:
+            st.success(f"{len(filtered_data):,} records found.")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                  st.metric(
+                        label="Total Units Sold",
+                        value=f"{filtered_data['units_sold'].sum():,}"
+                  )
+
+            with col2:
+                  st.metric(
+                        label="States Selected",
+                        value=f"{filtered_data['customer_state'].nunique():,}"
+                  )
+
+            with col3:
+                  st.metric(
+                        label="Categories Selected",
+                        value=f"{filtered_data['product_category_name'].nunique():,}"
+                  )
+
+            st.divider()
+
+            st.subheader("Product Sales Exploration")
+
+            category_explorer = (
+                  filtered_data
+                  .groupby("product_category_name")["units_sold"]
+                  .sum()
+                  .sort_values(ascending=False)
+                  .reset_index()
+            )
+
+            fig_explorer = px.bar(
+                  category_explorer,
+                  x="units_sold",
+                  y="product_category_name",
+                  orientation="h",
+                  title="Units Sold by Product Category",
+                  labels={
+                        "units_sold": "Units Sold",
+                        "product_category_name": "Product Category"
+                  },
+                  color="units_sold",
+                  color_continuous_scale=[
+                        "#E2E1E2",
+                        "#B0DBD1",
+                        "#92BAC1",
+                        "#E6B3D9"
+                  ]
+            )
+
+            fig_explorer.update_layout(
+                  plot_bgcolor="white",
+                  paper_bgcolor="white",
+                  yaxis=dict(autorange="reversed"),
+                  xaxis_title="Units Sold",
+                  yaxis_title="Product Category"
+            )
+
+            st.plotly_chart(
+                  fig_explorer,
+                  use_container_width=True
+            )
+
+            st.divider()
+
+            with st.expander("View Filtered Dataset"):
+                  st.dataframe(
+                        filtered_data.sort_values(
+                              by="units_sold",
+                              ascending=False
+                        ),
+                        use_container_width=True,
+                        hide_index=True
+                  )
 
 
 with st.sidebar:
