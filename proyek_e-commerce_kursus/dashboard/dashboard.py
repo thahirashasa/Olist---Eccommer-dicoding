@@ -351,7 +351,7 @@ with tab5:
 
 
 with st.sidebar:
-      st.image("/proyek_e-commerce_kursus/dashboard/ilustrasi_1.jpeg")
+      st.image("https://github.com/thahirashasa/Olist---Eccommer-dicoding/blob/main/proyek_e-commerce_kursus/dashboard/ilustrasi_1.jpeg")
 
 st.sidebar.title(
     "PROJECT SUBMISION FOR DICODDING IN DATA ANALYST "
