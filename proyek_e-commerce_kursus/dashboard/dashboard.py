@@ -21,7 +21,7 @@ palette = ["#E6B3D9", "#E2E1E2", "#B0DBD1", "#92BAC1"]
 st.title("E-Commerce Brazil Dashboard 🛍️")
 st.divider()
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
       "🏠 Overview",
       "🛍️ Regional Sales",
       "🚚 Delivery Performance",
