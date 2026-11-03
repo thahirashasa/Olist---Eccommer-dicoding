@@ -670,5 +670,135 @@ with tab5:
 
                                     st.plotly_chart(fig_rfm, width="stretch")
 
+with tab6:
+      st.header("Interactive Data Explorer")
+      st.caption(
+            "Explore product sales across Brazilian states "
+            "and product categories."
+      )
+
+      explorer_data = filtered_df.copy()
+
+      if explorer_data.empty:
+        st.warning("No data available for the selected filters.")
+
+      else:
+        st.success(f"{len(explorer_data):,} records found.")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric(
+                label="Total Units Sold",
+                value=f"{len(explorer_data):,}"
+            )
+
+        with col2:
+            st.metric(
+                label="States Selected",
+                value=f"{explorer_data['customer_state'].nunique():,}"
+            )
+
+        with col3:
+            st.metric(
+                label="Categories Selected",
+                value=f"{explorer_data['product_category_name'].nunique():,}"
+            )
+
+        st.divider()
+
+        st.subheader("Product Sales Exploration")
+
+        category_explorer = (
+            explorer_data
+            .groupby("product_category_name")
+            .size()
+            .sort_values(ascending=False)
+            .reset_index(name="units_sold")
+        )
+
+        category_translation = (
+            repeat_category1_df[
+                [
+                    "product_category_name",
+                    "product_category_name_english"
+                ]
+            ]
+            .drop_duplicates(subset="product_category_name")
+        )
+
+        category_explorer = category_explorer.merge(
+            category_translation,
+            on="product_category_name",
+            how="left"
+        )
+
+        category_explorer["product_category_name_english"] = (
+            category_explorer["product_category_name_english"]
+            .fillna(category_explorer["product_category_name"])
+        )
+
+        fig_explorer = px.bar(
+            category_explorer,
+            x="units_sold",
+            y="product_category_name_english",
+            orientation="h",
+            title="Units Sold by Product Category",
+            labels={
+                "units_sold": "Units Sold",
+                "product_category_name_english": "Product Category"
+            },
+            color="units_sold",
+            color_continuous_scale=[
+                "#E2E1E2",
+                "#B0DBD1",
+                "#92BAC1",
+                "#E6B3D9"
+            ]
+        )
+
+        fig_explorer.update_layout(
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            yaxis=dict(autorange="reversed"),
+            xaxis_title="Units Sold",
+            yaxis_title="Product Category"
+        )
+
+        st.plotly_chart(fig_explorer, width="stretch")
+
+        st.divider()
+
+        with st.expander("View Filtered Dataset"):
+            explorer_display = explorer_data.merge(
+                repeat_category1_df[
+                    [
+                        "product_category_name",
+                        "product_category_name_english"
+                    ]
+                ].drop_duplicates(
+                    subset="product_category_name"
+                ),
+                on="product_category_name",
+                how="left"
+            )
+
+            explorer_display["product_category_name"] = (
+                explorer_display["product_category_name_english"]
+                .fillna(explorer_display["product_category_name"])
+            )
+
+            explorer_display = explorer_display.drop(
+                columns=["product_category_name_english"]
+            )
+
+            st.dataframe(
+                explorer_display.sort_values(
+                    by="order_purchase_timestamp",
+                    ascending=False
+                ),
+                width="stretch",
+                hide_index=True
+            )
 
 st.caption("(C) Thahira Riska Pasha For Dicoding Submission") 
