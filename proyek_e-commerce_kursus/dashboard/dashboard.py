@@ -124,6 +124,8 @@ with tab1:
             )
       st.subheader("Key Metric")
 
+      col1, col2, col3, col4 = st.columns(4)
+
       total_customers = filtered_df["customer_unique_id"].nunique()
 
       total_orders = filtered_df["order_id"].nunique()
